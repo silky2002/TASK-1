@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Instant Feedback Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .quiz-box {
+      background: #fff;
+      padding: 30px;
+      border-radius: 10px;
+      width: 400px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .option {
+      background: #eee;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .option.correct {
+      background-color: #c8e6c9;
+    }
+
+    .option.wrong {
+      background-color: #ffcdd2;
+    }
+
+    .option:hover {
+      background: #d3d3d3;
+    }
+
+    .disabled {
+      pointer-events: none;
+    }
+
+    #nextBtn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #result {
+      font-size: 18px;
+      font-weight: bold;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+
+<div class="quiz-box" id="quizBox">
+  <h2 id="question">Loading...</h2>
+  <div id="options"></div>
+  <button id="nextBtn" onclick="nextQuestion()">Next</button>
+  <p id="result"></p>
+</div>
+
+<script>
+  const quizData = [
+    {
+      question: "Which is the capital of Japan?",
+      options: ["Kyoto", "Osaka", "Tokyo", "Nagasaki"],
+      answer: "Tokyo"
+    },
+    {
+      question: "What does HTML stand for?",
+      options: [
+        "Hyper Tool Markup Language",
+        "Hyper Text Markup Language",
+        "High Text Markdown Language",
+        "Hyper Transfer Markup Language"
+      ],
+      answer: "Hyper Text Markup Language"
+    },
+    {
+      question: "Which one is a JavaScript framework?",
+      options: ["Django", "Laravel", "React", "Flask"],
+      answer: "React"
+    }
+  ];
+
+  let currentIndex = 0;
+  let score = 0;
+
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const nextBtn = document.getElementById("nextBtn");
+  const resultEl = document.getElementById("result");
+
+  function loadQuestion() {
+    const currentQ = quizData[currentIndex];
+    questionEl.innerText = currentQ.question;
+    optionsEl.innerHTML = "";
+    nextBtn.style.display = "none";
+    resultEl.innerText = "";
+
+    currentQ.options.forEach(opt => {
+      const div = document.createElement("div");
+      div.className = "option";
+      div.innerText = opt;
+      div.onclick = () => handleAnswer(div, currentQ.answer);
+      optionsEl.appendChild(div);
+    });
+  }
+
+  function handleAnswer(selected, correctAnswer) {
+    const options = document.querySelectorAll(".option");
+
+    options.forEach(opt => {
+      opt.classList.add("disabled");
+      if (opt.innerText === correctAnswer) {
+        opt.classList.add("correct");
+      }
+    });
+
+    if (selected.innerText === correctAnswer) {
+      score++;
+      resultEl.innerText = "Correct!";
+      resultEl.style.color = "green";
+    } else {
+      selected.classList.add("wrong");
+      resultEl.innerText = "Wrong!";
+      resultEl.style.color = "red";
+    }
+
+    nextBtn.style.display = "inline-block";
+  }
+
+  function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < quizData.length) {
+      loadQuestion();
+    } else {
+      showFinalResult();
+    }
+  }
+
+  function showFinalResult() {
+    document.getElementById("quizBox").innerHTML = `
+      <h2>Quiz Completed!</h2>
+      <p id="result">Your final score: ${score} / ${quizData.length}</p>
+    `;
+  }
+
+  // Start Quiz
+  loadQuestion();
+</script>
+
+</body>
+</html>
